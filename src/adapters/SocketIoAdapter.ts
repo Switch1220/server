@@ -1,15 +1,14 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { Server, ServerOptions } from 'socket.io';
-import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { ServerOptions } from 'socket.io';
 
 export class SocketIoAdapter extends IoAdapter {
-  constructor(
-    private app: INestApplicationContext,
-    private configService: ConfigService,
-  ) {
+  private readonly configService: ConfigService;
+
+  constructor(app: INestApplicationContext, configService: ConfigService) {
     super(app);
+    this.configService = configService;
   }
 
   create(
@@ -17,7 +16,7 @@ export class SocketIoAdapter extends IoAdapter {
     options?: ServerOptions & { namespace?: string; server?: any },
   ) {
     const eventPort: number = this.configService.get<number>('eventPort');
-    const eventOptions: Object = this.configService.get<Object>('eventOptions');
+    const eventOptions: object = this.configService.get<object>('eventOptions');
 
     port = eventPort;
     // assign

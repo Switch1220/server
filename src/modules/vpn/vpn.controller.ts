@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { Vpn as VpnModel } from '@prisma/client';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { Prisma, Vpn as VpnModel } from '@prisma/client';
 import { VpnService } from './vpn.service';
 import { CreateVpnDto } from './dto/create-vpn.dto';
+import { UpdateVpnDto } from './dto/update-vpn.dto';
 
 @Controller('vpn')
 export class VpnController {
@@ -13,26 +22,39 @@ export class VpnController {
 
   @Get(':id')
   async getVpn(@Param('id') id: string): Promise<VpnModel> {
-    return this.vpnService.getVpn({ id: Number(id) });
+    return await this.vpnService.getVpn({ id: String(id) });
   }
 
   @Get()
   async getVpns(): Promise<VpnModel[]> {
-    return this.vpnService.getVpns({
-      where: { isAvailable: true },
+    return await this.vpnService.getVpns({
+      orderBy: { isAvailable: 'desc' },
+      // where: { isAvailable: true },
     });
   }
 
   @Post()
   async createVpn(@Body() vpnData: CreateVpnDto): Promise<VpnModel> {
-    return this.vpnService.createVpn(vpnData);
+    try {
+      return await this.vpnService.createVpn(vpnData);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new BadRequestException(`badman`);
+      }
+    }
   }
 
-  @Patch(':id')
-  updateVpn(@Param('id') id: number) {
-    return this.vpnService.updateVpn({
-      where: { id: Number(id) },
-      data: { isAvailable: true },
+  // -TODO: Status, edit for POST req; dto, error handling
+
+  @Patch()
+  async updateVpn(@Body() statusData: UpdateVpnDto): Promise<VpnModel> {
+    const { id, isAvailable, userInfo } = statusData;
+    return await this.vpnService.updateVpn({
+      where: { id: String(id) },
+      data: { isAvailable: Boolean(isAvailable), userInfo: String(userInfo) },
     });
   }
 }

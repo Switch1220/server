@@ -13,7 +13,7 @@ export class VpnService {
   async getVpn(
     vpnWhereUniqueInput: Prisma.VpnWhereUniqueInput,
   ): Promise<Vpn | null> {
-    return this.prisma.vpn.findUnique({
+    return await this.prisma.vpn.findUnique({
       where: vpnWhereUniqueInput,
     });
   }
@@ -26,11 +26,17 @@ export class VpnService {
     orderBy?: Prisma.VpnOrderByWithRelationInput;
   }): Promise<Vpn[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.vpn.findMany({ skip, take, cursor, where, orderBy });
+    return await this.prisma.vpn.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
   async createVpn(data: Prisma.VpnCreateInput): Promise<Vpn> {
-    return this.prisma.vpn.create({
+    return await this.prisma.vpn.create({
       data,
     });
   }
@@ -40,14 +46,14 @@ export class VpnService {
     data: Prisma.VpnUpdateInput;
   }): Promise<Vpn> {
     const { where, data } = params;
-    return this.prisma.vpn.update({
+    return await this.prisma.vpn.update({
       where,
       data,
     });
   }
 
   async deleteVpn(where: Prisma.VpnWhereUniqueInput): Promise<Vpn> {
-    return this.prisma.vpn.delete({
+    return await this.prisma.vpn.delete({
       where,
     });
   }

@@ -12,7 +12,7 @@ import { VpnService } from './vpn.service';
 import { CreateVpnDto } from './dto/create-vpn.dto';
 import { UpdateVpnDto } from './dto/update-vpn.dto';
 
-@Controller('vpn')
+@Controller()
 export class VpnController {
   private readonly vpnService: VpnService;
 
@@ -20,17 +20,22 @@ export class VpnController {
     this.vpnService = vpnService;
   }
 
-  @Get(':id')
-  async getVpn(@Param('id') id: string): Promise<VpnModel> {
-    return await this.vpnService.getVpn({ id: String(id) });
+  @Get('vpn')
+  async getAvailableVpn() {
+    return this.getVpn('d');
   }
 
-  @Get()
+  @Get('vpns')
   async getVpns(): Promise<VpnModel[]> {
     return await this.vpnService.getVpns({
       orderBy: { isAvailable: 'desc' },
       // where: { isAvailable: true },
     });
+  }
+
+  @Get('vpn/:id')
+  async getVpn(@Param('id') id: string): Promise<VpnModel> {
+    return await this.vpnService.getVpn({ id: String(id) });
   }
 
   @Post()

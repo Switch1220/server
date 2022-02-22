@@ -12,7 +12,7 @@ datasource db {
 
 model Vpn {
   id          String @id @default(cuid()) 
-  vpnAddress  String @unique
+  vpnAddress  String
   vpnName     String @unique
   vpnUsername String
   vpnPassword String

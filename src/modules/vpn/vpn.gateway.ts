@@ -64,7 +64,7 @@ export class VpnGateway
     this.server.emit('vpn-res', updatedVpns);
   }
 
-  @SubscribeMessage('disconnection-notice')
+  @SubscribeMessage('disconnect-req')
   async handleDisconnectionNotice(client: Socket, payload) {
     const update = await this.prisma.vpn.update({
       where: {
@@ -72,10 +72,13 @@ export class VpnGateway
       },
       data: {
         isAvailable: true,
+        userInfo: null,
       },
     });
 
     console.log(update);
+
+    client.emit('disconnect-res', update);
 
     const updatedVpns = await this.getAllVpns();
     this.server.emit('vpn-res', updatedVpns);

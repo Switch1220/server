@@ -82,6 +82,8 @@ export class VpnGateway
 
     const updatedVpns = await this.getAllVpns();
     this.server.emit('vpn-res', updatedVpns);
+    client.broadcast.emit('vpn-res');
+    // 업데이트 로직 분리예정
   }
 
   async getAllVpns(): Promise<VpnModel[]> {

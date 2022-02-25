@@ -22,7 +22,10 @@ export class VpnController {
 
   @Get('vpn')
   async getAvailableVpn() {
-    return this.getVpn('d');
+    return await this.vpnService.getVpns({
+      orderBy: { isAvailable: 'desc' },
+      where: { isAvailable: true },
+    });
   }
 
   @Get('vpns')
@@ -47,7 +50,7 @@ export class VpnController {
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === 'P2002'
       ) {
-        throw new BadRequestException(`badman`);
+        throw new BadRequestException(e);
       }
     }
   }

@@ -54,11 +54,9 @@ export class VpnGateway
       },
       data: {
         isAvailable: false,
-        userInfo: payload.userInfo,
+        userInfo: payload.userInfo || payload.id,
       },
     });
-
-    console.log(update);
 
     const updatedVpns = await this.getAllVpns();
     this.server.emit('vpn-res', updatedVpns);
@@ -66,28 +64,23 @@ export class VpnGateway
 
   @SubscribeMessage('disconnect-req')
   async handleDisconnectionNotice(client: Socket, payload) {
-    const update = await this.prisma.vpn.update({
-      where: {
-        id: payload,
-      },
-      data: {
-        isAvailable: true,
-        userInfo: null,
-      },
-    });
-
-    console.log(update);
-
-    client.emit('disconnect-res', update);
-
-    const updatedVpns = await this.getAllVpns();
-    this.server.emit('vpn-res', updatedVpns);
-    client.broadcast.emit('vpn-res');
-    // 업데이트 로직 분리예정
+    // const update = await this.prisma.vpn.update({
+    //   where: {
+    //     id: payload,
+    //   },
+    //   data: {
+    //     isAvailable: true,
+    //     userInfo: null,
+    //   },
+    // });
+    // client.emit('disconnect-res', update);
+    // const updatedVpns = await this.getAllVpns();
+    // this.server.emit('vpn-res', updatedVpns);
+    // client.broadcast.emit('update');
+    // // 업데이트 로직 분리예정
   }
 
   async getAllVpns(): Promise<VpnModel[]> {
-    console.log('d');
     const vpns = await this.prisma.vpn.findMany();
     return vpns;
   }
@@ -97,6 +90,7 @@ export class VpnGateway
   }
 
   handleConnection(client: Socket, args) {
+    client.emit('update');
     console.log(`client "${client.id}" connected`);
   }
 

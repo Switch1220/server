@@ -22,10 +22,8 @@ export class VpnController {
 
   @Get('vpn')
   async getAvailableVpn() {
-    return await this.vpnService.getVpns({
-      orderBy: { isAvailable: 'desc' },
-      where: { isAvailable: true },
-    });
+    console.log('ping1');
+    return await this.vpnService.getVpn({ isAvailable: true });
   }
 
   @Get('vpns')
@@ -59,6 +57,7 @@ export class VpnController {
 
   @Patch()
   async updateVpn(@Body() statusData: UpdateVpnDto): Promise<VpnModel> {
+    console.log('hihi');
     const { id, isAvailable, userInfo } = statusData;
     return await this.vpnService.updateVpn({
       where: { id: String(id) },

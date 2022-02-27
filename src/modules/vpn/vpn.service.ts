@@ -10,11 +10,9 @@ export class VpnService {
     this.prisma = prisma;
   }
 
-  async getVpn(
-    vpnWhereUniqueInput: Prisma.VpnWhereUniqueInput,
-  ): Promise<Vpn | null> {
-    return await this.prisma.vpn.findUnique({
-      where: vpnWhereUniqueInput,
+  async getVpn(vpnWhereInput: Prisma.VpnWhereInput): Promise<Vpn | null> {
+    return await this.prisma.vpn.findFirst({
+      where: vpnWhereInput,
     });
   }
 

@@ -10,8 +10,8 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn run prisma migrate deploy
 RUN yarn run prisma generate
+RUN yarn run prisma migrate deploy
 RUN yarn run build
 
 CMD ["node", "dist/main"]

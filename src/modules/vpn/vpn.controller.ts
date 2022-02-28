@@ -10,7 +10,8 @@ import {
 import { Prisma, Vpn as VpnModel } from '@prisma/client';
 import { VpnService } from './vpn.service';
 import { CreateVpnDto } from './dto/create-vpn.dto';
-import { UpdateVpnDto } from './dto/update-vpn.dto';
+import { registerConnectionDto } from './dto/register-connection.dto';
+import { registerDisconnectionDto } from './dto/register-disconnection.dto';
 
 @Controller()
 export class VpnController {
@@ -18,6 +19,11 @@ export class VpnController {
 
   constructor(vpnService: VpnService) {
     this.vpnService = vpnService;
+  }
+
+  @Get('ping')
+  async ping() {
+    return 'pong';
   }
 
   @Get('vpn')
@@ -29,7 +35,7 @@ export class VpnController {
   @Get('vpns')
   async getVpns(): Promise<VpnModel[]> {
     return await this.vpnService.getVpns({
-      orderBy: { isAvailable: 'desc' },
+      orderBy: { isAvailable: 'asc' },
       // where: { isAvailable: true },
     });
   }
@@ -39,7 +45,7 @@ export class VpnController {
     return await this.vpnService.getVpn({ id: String(id) });
   }
 
-  @Post()
+  @Post('vpn')
   async createVpn(@Body() vpnData: CreateVpnDto): Promise<VpnModel> {
     try {
       return await this.vpnService.createVpn(vpnData);
@@ -55,13 +61,25 @@ export class VpnController {
 
   // -TODO: Status, edit for POST req; dto, error handling
 
-  @Patch()
-  async updateVpn(@Body() statusData: UpdateVpnDto): Promise<VpnModel> {
-    console.log('hihi');
-    const { id, isAvailable, userInfo } = statusData;
+  @Patch('vpn/connect')
+  async registerConnection(
+    @Body() statusData: registerConnectionDto,
+  ): Promise<VpnModel> {
+    const { id, userInfo } = statusData;
     return await this.vpnService.updateVpn({
       where: { id: String(id) },
-      data: { isAvailable: Boolean(isAvailable), userInfo: String(userInfo) },
+      data: { isAvailable: false, userInfo: String(userInfo) },
+    });
+  }
+
+  @Patch('vpn/disconnect')
+  async registerDisconnection(
+    @Body() statusData: registerDisconnectionDto,
+  ): Promise<VpnModel> {
+    const { id } = statusData;
+    return await this.vpnService.updateVpn({
+      where: { id: String(id) },
+      data: { isAvailable: true, userInfo: null },
     });
   }
 }

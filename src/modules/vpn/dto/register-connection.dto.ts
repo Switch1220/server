@@ -1,13 +1,9 @@
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdateVpnDto {
+export class registerConnectionDto {
   @IsNotEmpty()
   @IsString()
   readonly id: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  readonly isAvailable: boolean;
 
   @IsNotEmpty()
   @IsString()

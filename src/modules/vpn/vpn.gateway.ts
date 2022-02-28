@@ -23,67 +23,72 @@ export class VpnGateway
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('getVpn')
-  handleMessage(client: Socket, payload: unknown): void {
-    this.server.emit('events', payload);
+  @SubscribeMessage('update')
+  handleMessage(client: Socket) {
+    this.server.emit('update');
   }
 
-  @SubscribeMessage('vpn-req')
-  async handleVpnReq(client: Socket, payload?: unknown): Promise<void> {
-    const vpns = await this.getAllVpns();
-    this.server.emit('vpn-res', vpns);
-  }
+  // @SubscribeMessage('getVpn')
+  // handleMessage(client: Socket, payload: unknown): void {
+  //   this.server.emit('events', payload);
+  // }
 
-  @SubscribeMessage('connect-req')
-  async handleConnectReq(client: Socket, payload?: unknown) {
-    const vpn = await this.prisma.vpn.findFirst({
-      where: { isAvailable: true },
-    });
+  // @SubscribeMessage('vpn-req')
+  // async handleVpnReq(client: Socket, payload?: unknown): Promise<void> {
+  //   const vpns = await this.getAllVpns();
+  //   this.server.emit('vpn-res', vpns);
+  // }
 
-    client.emit('connect-res', vpn);
-  }
+  // @SubscribeMessage('connect-req')
+  // async handleConnectReq(client: Socket, payload?: unknown) {
+  //   const vpn = await this.prisma.vpn.findFirst({
+  //     where: { isAvailable: true },
+  //   });
 
-  @SubscribeMessage('confirm-req')
-  async handleConfirmReq(
-    client: Socket,
-    payload: { id: string; userInfo: string },
-  ) {
-    const update = await this.prisma.vpn.update({
-      where: {
-        id: payload.id,
-      },
-      data: {
-        isAvailable: false,
-        userInfo: payload.userInfo || payload.id,
-      },
-    });
+  //   client.emit('connect-res', vpn);
+  // }
 
-    const updatedVpns = await this.getAllVpns();
-    this.server.emit('vpn-res', updatedVpns);
-  }
+  // @SubscribeMessage('confirm-req')
+  // async handleConfirmReq(
+  //   client: Socket,
+  //   payload: { id: string; userInfo: string },
+  // ) {
+  //   const update = await this.prisma.vpn.update({
+  //     where: {
+  //       id: payload.id,
+  //     },
+  //     data: {
+  //       isAvailable: false,
+  //       userInfo: payload.userInfo || payload.id,
+  //     },
+  //   });
 
-  @SubscribeMessage('disconnect-req')
-  async handleDisconnectionNotice(client: Socket, payload) {
-    // const update = await this.prisma.vpn.update({
-    //   where: {
-    //     id: payload,
-    //   },
-    //   data: {
-    //     isAvailable: true,
-    //     userInfo: null,
-    //   },
-    // });
-    // client.emit('disconnect-res', update);
-    // const updatedVpns = await this.getAllVpns();
-    // this.server.emit('vpn-res', updatedVpns);
-    // client.broadcast.emit('update');
-    // // 업데이트 로직 분리예정
-  }
+  //   const updatedVpns = await this.getAllVpns();
+  //   this.server.emit('vpn-res', updatedVpns);
+  // }
 
-  async getAllVpns(): Promise<VpnModel[]> {
-    const vpns = await this.prisma.vpn.findMany();
-    return vpns;
-  }
+  // @SubscribeMessage('disconnect-req')
+  // async handleDisconnectionNotice(client: Socket, payload) {
+  //   // const update = await this.prisma.vpn.update({
+  //   //   where: {
+  //   //     id: payload,
+  //   //   },
+  //   //   data: {
+  //   //     isAvailable: true,
+  //   //     userInfo: null,
+  //   //   },
+  //   // });
+  //   // client.emit('disconnect-res', update);
+  //   // const updatedVpns = await this.getAllVpns();
+  //   // this.server.emit('vpn-res', updatedVpns);
+  //   // client.broadcast.emit('update');
+  //   // // 업데이트 로직 분리예정
+  // }
+
+  // async getAllVpns(): Promise<VpnModel[]> {
+  //   const vpns = await this.prisma.vpn.findMany();
+  //   return vpns;
+  // }
 
   afterInit(server: Server) {
     console.log('init');
